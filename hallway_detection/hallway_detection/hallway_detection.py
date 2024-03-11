@@ -13,7 +13,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Header
 from rclpy.time import Time
-from sensor_msgs.msg import LaserScan
+from sensor_msgs.msg import Image
 from enum import Enum, auto
 
 class Hallway_Detection(Node):
@@ -23,25 +23,27 @@ class Hallway_Detection(Node):
         """
         super().__init__('hallway_detection')
 
-        # Create tf listener
-        self.buffer = Buffer()
-        self.tf_listener = TransformListener(self.buffer, self)
+        self.declare_parameter("rate", 5)
+        rate = self.get_parameter('rate').get_parameter_value().double_value
 
         # Create goal_pose publisher
-        self.goal_pose_publisher = self.create_publisher(PoseStamped, 'goal_pose', 10)
+        self.image_out_pub = self.create_publisher(Image, 'binary_image', 10)
 
         # Create laser scan subscriber
-        self.laser_scan_subscription = self.create_subscription(
-            LaserScan,
+        self.image_sub = self.create_subscription(
+            Image,
             'scan',
-            self.laser_scan_callback,
+            self.image_callback,
             10)
         
         # Create timer
-        self.timer = self.create_timer(0.1, self.timer_callback)
-
+        rate_seconds = 1 / rate
+        self.timer = self.create_timer(rate_seconds, self.timer_callback)
 
     def timer_callback(self):
+        pass
+
+    def image_callback(self):
         pass
 
 def main(args=None):
