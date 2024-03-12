@@ -138,11 +138,13 @@ class Hallway_Detection(Node):
         self.current_image = None
         # Create goal_pose publisher
         self.image_out_pub = self.create_publisher(Image, 'binary_image', 10)
+        self.red_green_pub = self.create_publisher(Image, 'red_green', 10)
+        
         
         # Create laser scan subscriber
         self.image_sub = self.create_subscription(
             Image,
-            '/camera/color/image_raw',
+            '/camera/camera/color/image_raw',
             self.image_callback,
             10)
         
@@ -161,8 +163,11 @@ class Hallway_Detection(Node):
             # output_image = self.tensor_to_mask_image(output_tensor)
 
             output_image = self.tensor_to_ros2_image(output_tensor)
+            
+            # red_green_image = self.apply_binary_filter_to_image(self.current_image, output_image)
             # self.get_logger().error(output_image)
             self.image_out_pub.publish(output_image)
+            # self.red_green_pub.publish(red_green_image)
         
 
     def image_callback(self, image):
@@ -204,6 +209,40 @@ class Hallway_Detection(Node):
         image_tensor /= 255.0
 
         return image_tensor
+    
+    # def apply_binary_filter_to_image(self,image, filter_image):
+
+    #     # Ensure the filter is binary
+    #     bridge = CvBridge()
+    #     try:
+    #         image = bridge.imgmsg_to_cv2(image, desired_encoding='passthrough')
+    #         filter_image = bridge.imgmsg_to_cv2(filter_image, desired_encoding='passthrough')
+    #     except Exception as e:
+    #         self.get_logger().error(f"Error converting ROS2 image to OpenCV: {e}")
+    #         return None
+        
+    #     filter_image = np.where(np.array(filter_image) > 127, 255, 0).astype(np.uint8)
+    #     # filter_image = Image.fromarray(filter_image)
+    #     #copnvert the filter image to a ros image
+    #     filter_image = bridge.cv2_to_imgmsg(filter_image, encoding='mono8')
+        
+    #     x = np.zeros((480,480,3))
+    #     y = np.array(filter_image)
+    #     np.where(y ==0.0)
+    #     i,j = np.where(y!=0.0)
+
+    #     for a in range(len(i)):
+    #         x[i[a],j[a],0] = 255
+
+    #     i,j = np.where(y==0.0)
+
+    #     for a in range(len(i)):
+    #         x[i[a],j[a],1] = 255
+    #     filter_img = Image.fromarray(x.astype('uint8'))
+    #     output_image = Image.blend(image, filter_img, 0.25)
+
+    #     return output_image
+
     
     #convert tensor to ros2 image
     def tensor_to_ros2_image(self, tensor: torch.Tensor) -> Image:
