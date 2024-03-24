@@ -10,4 +10,4 @@ hallway_detection - a package for detecting walls and obstales while navigating 
 
 ## Launchfiles
 
-Use `detect_hallways.launch.xml` to launch the `hallway_detection` node. This node subscribes to the `/camera/color/image_raw` topic publihsed by the RealSense camera, and publishes binary segmented images showing safe regions for the robot to travel to on the `/binary_image` topic.
+Use `detect_hallways.launch.xml` to launch the `hallway_detection` node. This node subscribes to the `/camera/color/image_raw` topic publihsed by the RealSense camera and publishes binary segmented images showing safe regions for the robot to travel to on the `/binary_image` topic.
